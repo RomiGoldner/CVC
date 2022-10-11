@@ -164,11 +164,14 @@ def main():
     logging.info(f"Commandline invocation: {' '.join(sys.argv)}")
 
     # Log git status
-    repo = git.Repo(
-        path=os.path.dirname(os.path.abspath(__file__)), search_parent_directories=True
-    )
-    sha = repo.head.object.hexsha
-    logging.info(f"Git commit: {sha}")
+    try:
+        repo = git.Repo(
+            path=os.path.dirname(os.path.abspath(__file__)), search_parent_directories=True
+        )
+        sha = repo.head.object.hexsha
+        logging.info(f"Git commit: {sha}")
+    except git.InvalidGitRepositoryError:
+        logging.info("Git commit: N/A")
 
     # Log torch version and params
     with open(os.path.join(args.outdir, "params.json"), "w") as sink:

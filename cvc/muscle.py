@@ -8,7 +8,7 @@ import shlex
 import logging
 from typing import *
 
-import utils
+import cvc.utils as utils
 
 
 def run_muscle(sequences: Iterable[str], fast: bool = False) -> List[str]:

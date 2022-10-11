@@ -7,7 +7,6 @@ import importlib
 importlib.reload(plot_utils)
 
 
-# create class embedding wrapper
 class EmbeddingWrapper:
     def __init__(self, model, device, sequences_df, batch_size=1024, pbar=True, **embedding_kwargs):
         self.model = model

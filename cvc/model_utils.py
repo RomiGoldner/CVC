@@ -38,14 +38,9 @@ from neptune.experiments import Experiment
 from neptune.api_exceptions import ChannelsValuesSendBatchError
 
 
-import data_loader as dl
-import featurization as ft
+import cvc.data_loader as dl
+import cvc.featurization as ft
 from cvc import utils
-
-SRC_DIR = os.path.dirname(__file__)
-MODEL_DIR = os.path.join(SRC_DIR, "../to_delete/cvc/models")
-assert os.path.isdir(MODEL_DIR)
-sys.path.append(MODEL_DIR)
 
 
 class NeptuneHuggingFaceCallback(TrainerCallback):

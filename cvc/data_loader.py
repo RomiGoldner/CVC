@@ -22,10 +22,8 @@ from torch.utils.data import Dataset
 import numpy as np
 import pandas as pd
 
-import Levenshtein
-
-import featurization as ft
-import utils
+import cvc.featurization as ft
+import cvc.utils as utils
 
 LOCAL_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 assert os.path.isdir(LOCAL_DATA_DIR)

@@ -10,9 +10,9 @@ import matplotlib.patches as mpatches
 import sklearn.metrics as metrics
 from adjustText import adjust_text
 
-import featurization as ft
-import custom_metrics
-import utils
+import cvc.featurization as ft
+import cvc.custom_metrics as custom_metrics
+import cvc.utils as utils
 
 SAVEFIG_DPI = 300
 

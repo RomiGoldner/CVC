@@ -13,12 +13,11 @@ from functools import cached_property
 from math import floor
 
 import numpy as np
-import pandas as pd
 
 from transformers import BertTokenizer
 
-import muscle
-import utils
+import cvc.muscle as muscle
+import cvc.utils as utils
 
 #
 AA_TRIPLET_TO_SINGLE = {

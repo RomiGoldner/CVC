@@ -21,3 +21,4 @@ conda env create -n my_env_name_py39 python=3.9 --file=environment.yml
 
 
 TODO(P0): add model download instructions
+* Install gdown: pip install --upgrade --no-cache-dir gdown

@@ -19,10 +19,10 @@ import anndata as ad
 from Bio import PDB
 import logomaker
 
-import data_loader as dl
-import featurization as ft
-import muscle
-import utils
+import cvc.data_loader as dl
+import cvc.featurization as ft
+import cvc.muscle as muscle
+import cvc.utils as utils
 
 
 def per_position_aa_count(
