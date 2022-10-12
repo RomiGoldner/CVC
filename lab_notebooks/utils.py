@@ -5,7 +5,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
 DEVICE = ut.get_device(0)
 # GCP paths
-HOME_DIR_GCP = "/home/romi/projects/preTCR"
+HOME_DIR_GCP = "/home/romi/projects/cvc"
 DATA_DIR = HOME_DIR_GCP + "/CDR3_data/"
 # model trained on 5 million sequences - 2.5 million private and 2.5 million public
 TRANSFORMER = HOME_DIR_GCP + "/output_5mil_even_priv_pub"
