@@ -1,6 +1,6 @@
 # Count Von Count (CVC)
 
-![Screenshot](cv_pipeline.pdf)
+![Screenshot](cvc_pipeline.pdf)
 
 CVC is a language model trained on CDR3 T-cell receptor sequences, built using a lightly modified BERT architecture with tweaked pre-training objectives. The model creates meaningful embeddings that can be used for downstream tasks like classification.
 
