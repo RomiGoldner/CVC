@@ -29,6 +29,6 @@ python -m scripts.download_cvc
 
 
 3. To create embeddings: <br />
-   a. open notebook: lab_notebooks/create_embeddings.ipynb <br />
+   a. open notebook: [lab_notebooks/create_embeddings.ipynb](https://github.com/RomiGoldner/CVC/blob/b5434f6ce4419a4dfda299b104064747f0672215/lab_notebooks/create_embeddings.ipynb) <br />
    b. edit first cell with relative paths <br />
    c. run notebook <br />
