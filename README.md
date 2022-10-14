@@ -33,11 +33,11 @@ python -m scripts.download_cvc
    c. run notebook <br />
    
 ## Train Model 
-To train the model on your own set of sequences, first upload your csv data file using:
+To train the model on your own set of sequences, first upload your csv data and then run command for training.
 ```bash
-- rsync -arvP PATH_TO_DATA MACHINE NAME:~/cvc/data/custom_dataset/
-```
-Then train model by running:
-```bash
+# upload data
+rsync -arvP PATH_TO_DATA MACHINE NAME:~/cvc/data/custom_dataset/
+
+# train model
 python3 bin/selfsupervised_transformer.py --epochs 50 --bs 1024 --noneptune --datasets CUSTOM_DATASET --config ./model_configs/bert_defaults.json --outdir ./output_dir/
 ```
