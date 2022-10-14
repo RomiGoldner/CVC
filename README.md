@@ -1,6 +1,6 @@
 # Count Von Count (CVC)
 
-CVC is a language model trained on CDR3 T-cell receptor sequences, built using a lightly modified BERT architecture with tweaked pre-training objectives. The model creates meaningful embeddings that can be used for downstream tasks like classification.
+CVC is a language model trained on CDR3 T-cell receptor sequences, built using a lightly modified BERT architecture with tweaked pre-training objectives.<br /> The model creates meaningful embeddings that can be used for downstream tasks like classification.
 
 <p align="center">
 <img src="https://github.com/RomiGoldner/CVC/blob/d91d7dfaaaae240393a32ba05cfda2dfc327f4e5/cvc_pipeline.png" width="500" height="350">
@@ -9,7 +9,7 @@ CVC is a language model trained on CDR3 T-cell receptor sequences, built using a
 ## Installation and Usage
 
 To install CVC:
-1. Clone the GitHub repository and create its requisite conda environment as follows.
+1. Clone the GitHub repository and create its requisite conda environment as follows.<br />
    Make sure you use a recent conda version, e.g. version=4.10 or above
 
 ```bash
