@@ -33,7 +33,7 @@ python -m scripts.download_cvc
    c. run notebook <br />
    
 ## Train Model 
-To train the model on your own set of sequences, first upload your csv data and then run command for training.
+To train the model on your own set of sequences, first upload the csv file that contains the data (TCR sequences) to the 'custom_dataset' folder and then run the command for training.
 ```bash
 # upload data
 rsync -arvP PATH_TO_DATA MACHINE NAME:~/cvc/data/custom_dataset/
