@@ -32,7 +32,16 @@ python -m scripts.download_cvc
    b. edit first cell with relative paths <br />
    c. run notebook <br />
    
-## Train Model 
+## Train Model
+The data used to train CVC is shared with a google drive link and can be downloaded using the following commands:
+```bash
+# install gdown
+pip install --upgrade --no-cache-dir gdown
+
+# run script to download data
+python -m scripts.download_cvc_training_data
+```
+
 To train the model on your own set of sequences, first upload the csv file that contains the data (TCR sequences) to the 'custom_dataset' folder and then run the command for training.
 ```bash
 # upload data
