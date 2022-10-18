@@ -1,11 +1,15 @@
 # Count Von Count (CVC)
 
-CVC is a language model trained on CDR3 T-cell receptor sequences, built using a lightly modified BERT architecture with tweaked pre-training objectives. The model creates meaningful embeddings that can be used for downstream tasks like classification.
+CVC is a language model trained on CDR3 T-cell Receptor (TCR) sequences, built using a lightly modified BERT architecture with tweaked pre-training objectives. The model creates meaningful embeddings that can be used for downstream tasks like classification.
 
-## Installation
+<p align="center">
+<img src="https://github.com/RomiGoldner/CVC/blob/d91d7dfaaaae240393a32ba05cfda2dfc327f4e5/cvc_pipeline.png" width="500" height="350">
+</p>
+
+## Installation and Usage
 
 To install CVC:
-1. Clone the GitHub repository and create its requisite conda environment as follows.
+1. Clone the GitHub repository and create its requisite conda environment as follows.<br />
    Make sure you use a recent conda version, e.g. version=4.10 or above
 
 ```bash
@@ -13,12 +17,36 @@ conda env create -n my_env_name_py39 python=3.9 --file=environment.yml
 ```
 
 2. Upload model folder into the project base dir. Place the downloaded folder in the root of the project.
+   The model is shared with a google drive link and can be downloaded using 'gdown'.
+
+```bash
+# install gdown
+pip install --upgrade --no-cache-dir gdown
+
+# run script to download model
+python -m scripts.download_cvc
+```
 
 3. To create embeddings: <br />
-   a. open notebook: lab_notebooks/create_embeddings.ipynb <br />
+   a. open notebook: [lab_notebooks/create_embeddings.ipynb](https://github.com/RomiGoldner/CVC/blob/b5434f6ce4419a4dfda299b104064747f0672215/lab_notebooks/create_embeddings.ipynb) <br />
    b. edit first cell with relative paths <br />
-   c. run noteboook <br />
+   c. run notebook <br />
+   
+## Train Model
+The data used to train CVC is shared with a google drive link and can be downloaded using the following commands:
+```bash
+# install gdown
+pip install --upgrade --no-cache-dir gdown
 
+# run script to download data
+python -m scripts.download_cvc_training_data
+```
 
-TODO(P0): add model download instructions
-* Install gdown: pip install --upgrade --no-cache-dir gdown
+To train the model on your own set of sequences, use the '--data_path' flag and give it the data file's path.
+```bash
+# trail model with default dataset
+python3 bin/train_cvc.py --epochs 50 --bs 1024 --noneptune --datasets CUSTOM_DATASET --config ./model_configs/bert_defaults.json --outdir ./output_dir/
+
+# train model with custom dataset
+python3 bin/train_cvc.py --epochs 50 --bs 1024 --noneptune --datasets CUSTOM_DATASET --config ./model_configs/bert_defaults.json --outdir ./output_dir/ --data_path PATH_TO_CSV
+```
