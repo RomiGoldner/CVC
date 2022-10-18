@@ -42,11 +42,11 @@ pip install --upgrade --no-cache-dir gdown
 python -m scripts.download_cvc_training_data
 ```
 
-To train the model on your own set of sequences, first upload the csv file that contains the data (TCR sequences) to the 'custom_dataset' folder and then run the command for training.
+To train the model on your own set of sequences, use the '--data_path' flag and give it the data file's path.
 ```bash
-# upload data
-rsync -arvP PATH_TO_DATA MACHINE NAME:~/cvc/data/custom_dataset/
-
-# train model
+# trail model with default dataset
 python3 bin/train_cvc.py --epochs 50 --bs 1024 --noneptune --datasets CUSTOM_DATASET --config ./model_configs/bert_defaults.json --outdir ./output_dir/
+
+# train model with custom dataset
+python3 bin/train_cvc.py --epochs 50 --bs 1024 --noneptune --datasets CUSTOM_DATASET --config ./model_configs/bert_defaults.json --outdir ./output_dir/ --data_path PATH_TO_CSV
 ```
