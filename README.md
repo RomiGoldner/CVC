@@ -14,9 +14,11 @@ To install CVC:
 
 ```bash
 conda env create -n my_env_name_py39 python=3.9 --file=environment.yml
+
+conda activate my_env_name_py39
 ```
 
-2. Upload model folder into the project base dir. Place the downloaded folder in the root of the project.
+2. Upload model into the project base dir.
    The model is shared with a google drive link and can be downloaded using 'gdown'.
 
 ```bash
