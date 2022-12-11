@@ -82,9 +82,9 @@ def plot_anndata_rep(
     assert color in a.obs
     color_vals = a.obs[color]
     unique_val = np.unique(color_vals.values)
-    unique_val = color_vals.values.categories.values # for appearance bins
-    # color_idx = [sorted(list(unique_val)).index(i) for i in color_vals]
-    color_idx = [list(unique_val).index(i) for i in color_vals] # for appearance bins
+    #unique_val = color_vals.values.categories.values # for appearance bins
+    color_idx = [sorted(list(unique_val)).index(i) for i in color_vals]
+    #color_idx = [list(unique_val).index(i) for i in color_vals] # for appearance bins
     # Vector of colors for each point
     color_vec = [cmap(i) for i in color_idx]
 

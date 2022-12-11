@@ -33,7 +33,7 @@ class EmbeddingWrapper:
     # plot embedding
     def plot_embedding(self, color_embed, color_map, title=None, legend_size=7, plot_pdf_path=None, anndata=None):
         anndata = self.create_anndata() if anndata is None else anndata
-        plot_utils.plot_anndata_rep(
+        fig = plot_utils.plot_anndata_rep(
             anndata,
             color=color_embed,
             direct_label=False,
@@ -41,4 +41,7 @@ class EmbeddingWrapper:
             title=title,
             legend_size=legend_size,
             fname=plot_pdf_path,
-        ).show()
+        )
+
+        fig.show()
+        return fig
