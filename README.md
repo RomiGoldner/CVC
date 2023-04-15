@@ -63,11 +63,11 @@ python3 bin/train_cvc.py --epochs 50 --bs 1024 --noneptune --datasets CUSTOM_DAT
 
 # scCVC
 # train scCVC model with default dataset
-python -m bin.train_cvc_new --epochs 50 --bs 128 --noneptune --pathdata ./scDATA_ready_for_training.csv --config ./model_configs/bert_defaults.json --outdir ./output_dir/
+python -m bin.train_sc_cvc --epochs 50 --bs 128 --noneptune --pathdata ./scDATA_ready_for_training.csv --config ./model_configs/bert_defaults.json --outdir ./output_dir/
 
 # train scCVC model with custom dataset
 # use the preprocess_scData_for_training.ipynb notebook to preprocess your data
-python -m bin.train_cvc_new --epochs 50 --bs 128 --noneptune --pathdata PATH_TO_CSV --config ./model_configs/bert_defaults.json --outdir ./output_dir/
+python -m bin.train_sc_cvc --epochs 50 --bs 128 --noneptune --pathdata PATH_TO_CSV --config ./model_configs/bert_defaults.json --outdir ./output_dir/
 ```
 ## Notebooks
 The main notebooks used in the paper are under the lab_notebooks folder and single_cell_research folder. <br />
