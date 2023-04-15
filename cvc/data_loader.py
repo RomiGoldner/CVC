@@ -21,6 +21,7 @@ from torch.utils.data import Dataset
 
 import numpy as np
 import pandas as pd
+import random
 
 import cvc.featurization as ft
 import cvc.utils as utils
@@ -37,6 +38,7 @@ DATASET_NAMES = {"CUSTOM_DATASET"} # TODO(P2): add hd5 support
 
 logging.basicConfig(level=logging.INFO)
 
+SEP = "|"
 
 class TcrABSupervisedIdxDataset(Dataset):
     """Dataset that returns TcrAB and label"""
@@ -175,6 +177,41 @@ class TcrSelfSupervisedDataset(TcrABSupervisedIdxDataset):
         return TcrSelfSupervisedDataset(all_tcrs)
 
 
+# For TRA & TRB with single cell labels
+class TcrABSingleCellSupervisedDataset(TcrABSupervisedIdxDataset):
+    # have init function receive a path to a csv file that contains the tcrs and the samples they belong to
+    def __init__(self, tcr_seqs_path: pd.DataFrame, round_len: bool = True):
+        # read the file
+        tcr_seqs_df = pd.read_csv(tcr_seqs_path)
+        self.tcr_seqs = tcr_seqs_df["tcr_seqs"].tolist()
+        logging.info(
+            f"Creating self supervised dataset with {len(self.tcr_seqs)} sequences"
+        )
+        self.max_len = max([len(s) for s in self.tcr_seqs])
+        logging.info(f"Maximum sequence length: {self.max_len}")
+        if round_len:
+            self.max_len = int(utils.min_power_greater_than(self.max_len, 2))
+            logging.info(f"Rounded maximum length to {self.max_len}")
+        self.tokenizer = ft.get_aa_bert_tokenizer(self.max_len)
+        self._has_logged_example = False
+
+    def __len__(self) -> int:
+        return len(self.tcr_seqs)
+
+    def __getitem__(self, i: int) -> Dict[str, torch.Tensor]:
+        tcr = self.tcr_seqs[i]
+        # generate the order of the CDR3 sequences randomly
+        tcr_sub_seqs = tcr.split("|")
+        random.shuffle(tcr_sub_seqs)
+        tcr = "|".join(tcr_sub_seqs)
+
+        retval = self.tokenizer.encode(ft.insert_whitespace(tcr))
+        if not self._has_logged_example:
+            logging.info(f"Example of tokenized input: {tcr} -> {retval}")
+            self._has_logged_example = True
+        return {"input_ids": torch.tensor(retval, dtype=torch.long)}
+
+
 class DatasetSplit(Dataset):
     """
     Dataset split. Thin wrapper on top a dataset to provide data split functionality.
@@ -198,9 +235,11 @@ class DatasetSplit(Dataset):
         self.dynamic = dynamic_training
         if self.split != "train":
             assert not self.dynamic, "Cannot have dynamic examples for valid/test"
-        self.idx = shuffle_indices_train_valid_test(
+        train_valid_test_lists = shuffle_indices_train_valid_test(
             np.arange(len(self.dset)), **kwargs
-        )[split_to_idx[self.split]]
+        )
+        list_index = split_to_idx[self.split]
+        self.idx = train_valid_test_lists[list_index]
         logging.info(f"Split {self.split} with {len(self)} examples")
 
     def all_labels(self, **kwargs) -> np.ndarray:
@@ -407,3 +446,100 @@ def chunkify(x: Sequence[Any], chunk_size: int = 128):
     retval = [x[i : i + chunk_size] for i in range(0, len(x), chunk_size)]
     return retval
 
+class TcrFineTuneDataset(TcrSelfSupervisedDataset):
+    def __init__(
+            self,
+            tcr_a_seqs: Sequence[str],
+            tcr_b_seqs: Sequence[str],
+            labels: Optional[np.ndarray] = None,
+            label_continuous: bool = False,
+            tokenizer: Optional[Callable] = None,
+            skorch_mode: bool = True,
+            idx_encode: bool = False,
+    ):
+        assert len(tcr_a_seqs) == len(tcr_b_seqs)
+        self.tcr_a = list(tcr_a_seqs)
+        self.tcr_b = list(tcr_b_seqs)
+        self.max_len = max([len(s) for s in self.tcr_a + self.tcr_b]) + 2
+
+        if tokenizer is None:
+            tokenizer = ft.get_aa_bert_tokenizer(self.max_len)
+            self.tcr_a_tokenized = [
+                tokenizer.encode(
+                    ft.insert_whitespace(aa),
+                    padding="max_length",
+                    max_length=self.max_len,
+                )
+                for aa in self.tcr_a
+            ]
+            self.tcr_b_tokenized = [
+                tokenizer.encode(
+                    ft.insert_whitespace(aa),
+                    padding="max_length",
+                    max_length=self.max_len,
+                )
+                for aa in self.tcr_b
+            ]
+        else:
+            logging.info(f"Using pre-supplied tokenizer: {tokenizer}")
+            _label, _seq, self.tcr_a_tokenized = tokenizer(list(enumerate(self.tcr_a)))
+            _label, _seq, self.tcr_b_tokenized = tokenizer(list(enumerate(self.tcr_b)))
+
+        if labels is not None:
+            assert len(labels) == len(tcr_a_seqs)
+            self.labels = np.atleast_1d(labels.squeeze())
+        else:
+            logging.warning(
+                "Labels not given, defaulting to False labels (DO NOT USE FOR TRAINING)"
+            )
+            self.labels = None
+        self.continuous = label_continuous
+        self.skorch_mode = skorch_mode
+        self.idx_encode = idx_encode
+
+    def get_ith_sequence(self, idx: int) -> Tuple[str, str]:
+        """Get the ith TRA/TRB pair"""
+        return self.tcr_a[idx], self.tcr_b[idx]
+
+    def get_ith_label(self, idx: int, idx_encode: Optional[bool] = None) -> np.ndarray:
+        """Get the ith label"""
+        if self.labels is None:
+            return np.array([0])  # Dummy value
+        if not self.continuous:
+            label = self.labels[idx]
+            if not isinstance(label, np.ndarray):
+                label = np.atleast_1d(label)
+            if self.skorch_mode and len(label) == 1:
+                label = np.array([1.0 - label, label]).squeeze()
+            # Take given value if supplied, else default to self.idx_encode
+            idx_encode = self.idx_encode if idx_encode is None else idx_encode
+            if idx_encode:
+                label = np.where(label)[0]
+            return label
+        else:
+            # For the continuous case we simply return the ith value(s)
+            return self.labels[idx]
+
+    def __len__(self) -> int:
+        return len(self.tcr_a)
+
+    def __getitem__(
+            self, idx: int
+    ) -> Union[Dict[str, torch.Tensor], Tuple[Dict[str, torch.Tensor], torch.Tensor]]:
+        label_dtype = torch.float if self.continuous else torch.long
+        tcr_a = self.tcr_a_tokenized[idx]
+        tcr_b = self.tcr_b_tokenized[idx]
+        label = self.get_ith_label(idx)
+        if not self.skorch_mode:
+            retval = {
+                "tcr_a": utils.ensure_tensor(tcr_a, dtype=torch.long),
+                "tcr_b": utils.ensure_tensor(tcr_b, dtype=torch.long),
+                "labels": utils.ensure_tensor(label, dtype=label_dtype),
+            }
+        else:
+            model_inputs = {
+                "tcr_a": utils.ensure_tensor(tcr_a, dtype=torch.long),
+                "tcr_b": utils.ensure_tensor(tcr_b, dtype=torch.long),
+            }
+            retval = (model_inputs, torch.tensor(label, dtype=label_dtype).squeeze())
+        return retval

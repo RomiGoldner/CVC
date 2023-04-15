@@ -52,6 +52,13 @@ assert all([x == y for x, y in zip(AMINO_ACIDS, AA_TRIPLET_TO_SINGLE.values())])
 AMINO_ACIDS_TO_IDX = {aa: i for i, aa in enumerate(AMINO_ACIDS)}
 
 # Pad with $ character
+# for single cell model
+# PAD = "$"
+# MASK = "."
+# UNK = "*"
+# SEP = "|"
+# CLS = "&"
+# for bulk trb model
 PAD = "$"
 MASK = "."
 UNK = "?"
@@ -209,6 +216,7 @@ def get_pretrained_bert_tokenizer(path: str) -> BertTokenizer:
         mask_token=MASK,
         padding_side="right",
     )
+
     return tok
 
 

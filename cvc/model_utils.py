@@ -103,7 +103,7 @@ def get_transformer_attentions(
     if isinstance(model_dir, str):
         tok = ft.get_pretrained_bert_tokenizer(model_dir)
         model = BertModel.from_pretrained(
-            model_dir, add_pooling_layer=False, output_attentions=True,
+            model_dir, add_pooling_layer=False, output_attentions=True, output_hidden_states=True
         ).to(device)
     elif isinstance(model_dir, nn.Module):
         tok = ft.get_aa_bert_tokenizer(64)
@@ -157,6 +157,7 @@ def get_transformer_embeddings(
     batch_size: int = 256,
     device: int = 0,
     pbar = False,
+    max_len: int = 64,
 ) -> np.ndarray:
     """
     Get the embeddings for the given sequences from the given layers
@@ -178,14 +179,15 @@ def get_transformer_embeddings(
         tok = ft.get_pretrained_bert_tokenizer(model_dir)
     except OSError:
         logging.warning("Could not load saved tokenizer, loading fresh instance")
-        tok = ft.get_aa_bert_tokenizer(64)
-    model = BertModel.from_pretrained(model_dir, add_pooling_layer=method == "pool").to(
+        tok = ft.get_aa_bert_tokenizer(max_len)
+    model = BertModel.from_pretrained(model_dir, add_pooling_layer=method == "pool", output_hidden_states=True).to(
         device
     )
 
     chunks = dl.chunkify(seqs, batch_size)
     # This defaults to [None] to zip correctly
     chunks_pair = [None]
+
     if seq_pair is not None:
         assert len(seq_pair) == len(seqs)
         chunks_pair = dl.chunkify(
@@ -196,11 +198,10 @@ def get_transformer_embeddings(
     # for a duo input, we get (list of seq1, list of seq2)
     chunks_zipped = list(zip_longest(chunks, chunks_pair))
     embeddings = []
-    attentions = []
     with torch.no_grad():
         for seq_chunk in tqdm(chunks_zipped, disable=not pbar):
             encoded = tok(
-                *seq_chunk, padding="max_length", max_length=64, return_tensors="pt"
+                *seq_chunk, padding="max_length", max_length=max_len, return_tensors="pt"
             )
             # manually calculated mask lengths
             # temp = [sum([len(p.split()) for p in pair]) + 3 for pair in zip(*seq_chunk)]
@@ -267,6 +268,32 @@ def get_transformer_embeddings(
     del model
     torch.cuda.empty_cache()
     return embeddings
+
+def get_model_tokenizer(
+        model_dir: str,
+        *,
+        method: Literal["mean", "max", "attn_mean", "cls", "pool"] = "mean",
+        device: int = 0,
+        max_len: int = 64,
+) -> np.ndarray:
+    device = utils.get_device(device)
+    try:
+        tok = ft.get_pretrained_bert_tokenizer(model_dir)
+    except OSError:
+        logging.warning("Could not load saved tokenizer, loading fresh instance")
+        tok = ft.get_aa_bert_tokenizer(max_len)
+    # model = BertModel.from_pretrained(
+    #       model_dir, add_pooling_layer=method == "pool",
+    #       output_hidden_states=True, return_dict=True).to(device)
+    import transformers
+    model = transformers.models.bert.BertForMaskedLM.from_pretrained(
+        model_dir,
+        # add_pooling_layer=method == "pool",
+        output_hidden_states=True,
+        return_dict=True
+    ).to(device)
+
+    return model, tok
 
 
 def get_esm_embedding(

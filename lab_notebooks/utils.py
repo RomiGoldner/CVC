@@ -15,8 +15,8 @@ HOME_DIR_GCP = get_project_root()
 DATA_DIR = HOME_DIR_GCP + "/CDR3_data/"
 # model trained on 5 million sequences - 2.5 million private and 2.5 million public
 TRANSFORMER = HOME_DIR_GCP + "/output_5mil_even_priv_pub"
-# TRANSFORMER = HOME_DIR_GCP + "/output_dir_91m_v22_91m"
-# TRANSFORMER = HOME_DIR_GCP + "/output_dir_v23_17m_8gpu_batch256"
+# model trained on 2.2 million single cells (represented with concatenated CDR3 sequences)
+SC_TRANSFORMER = HOME_DIR_GCP + "/output_dir_singlecell_v2"
 
 # classification algorithms
 # xgBoost
@@ -36,7 +36,7 @@ def xgb_classify(train_embeddings, embed_train_labels_num, validation_embeddings
 # LDA
 def lda_classify(train_embeddings, embed_train_labels_num, validation_embeddings, embed_val_labels_num, seed=None):
     # Initialize classifier
-    lda_classifier = LDA(n_components=1, random_state=seed)
+    lda_classifier = LDA(n_components=1)
     # Fit
     lda_classifier.fit(train_embeddings, embed_train_labels_num)
     # Predict

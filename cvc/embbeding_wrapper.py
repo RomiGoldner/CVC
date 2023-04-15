@@ -8,31 +8,34 @@ importlib.reload(plot_utils)
 
 
 class EmbeddingWrapper:
-    def __init__(self, model, device, sequences_df, batch_size=1024, pbar=True, **embedding_kwargs):
+    def __init__(self, model, device, sequences_df, batch_size=1024, pbar=True, max_len=64, embeddings=None, **embedding_kwargs):
         self.model = model
         self.device = device
         self.sequences_df = sequences_df
         sequences = sequences_df.Sequences.tolist()
-        self.embeddings = model_utils.get_transformer_embeddings(
-            self.model,
-            sequences,
-            batch_size=batch_size,
-            device=self.device,
-            pbar=pbar,
-            **embedding_kwargs
-        )
+        # if embeddings are not provided, create them
+        if embeddings is None:
+            self.embeddings = model_utils.get_transformer_embeddings(
+                self.model,
+                sequences,
+                batch_size=batch_size,
+                device=self.device,
+                pbar=pbar,
+                max_len=max_len,
+                **embedding_kwargs
+            )
 
     # create adata object of the embedding
-    def create_anndata(self):
+    def create_anndata(self, n_comps=50):
         anndata = ad.AnnData(self.embeddings, obs=self.sequences_df)
-        sc.pp.pca(anndata, n_comps=50)
+        sc.pp.pca(anndata, n_comps=n_comps)
         sc.pp.neighbors(anndata)
         sc.tl.umap(anndata)
         return anndata
 
     # plot embedding
-    def plot_embedding(self, color_embed, color_map, title=None, legend_size=7, plot_pdf_path=None, anndata=None):
-        anndata = self.create_anndata() if anndata is None else anndata
+    def plot_embedding(self, color_embed, color_map, title=None, legend_size=7, plot_pdf_path=None, anndata=None, n_comps=50):
+        anndata = self.create_anndata(n_comps) if anndata is None else anndata
         fig = plot_utils.plot_anndata_rep(
             anndata,
             color=color_embed,
@@ -44,4 +47,3 @@ class EmbeddingWrapper:
         )
 
         fig.show()
-        return fig

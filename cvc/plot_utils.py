@@ -14,7 +14,7 @@ import cvc.featurization as ft
 import cvc.custom_metrics as custom_metrics
 import cvc.utils as utils
 
-SAVEFIG_DPI = 300
+SAVEFIG_DPI = 1200
 
 
 def plot_sequence_diversity(
@@ -136,5 +136,5 @@ def plot_anndata_rep(
         ax.set(xticks=[], yticks=[])
 
     if fname:
-        fig.savefig(fname, bbox_inches="tight")
+        fig.savefig(fname, bbox_inches="tight", dpi=SAVEFIG_DPI)
     return fig
