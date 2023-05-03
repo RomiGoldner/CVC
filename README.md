@@ -5,7 +5,7 @@ CVC is a language model trained on CDR3 T-cell Receptor (TCR) sequences, built u
 scCVC is an updated version of CVC that was trained on single-cell TCR sequences (each single cell was represented by its CDR3 sequences). The model was trained using the same architecture as CVC. It creates meaningful embeddings both for single sequences and single cells.
 
 <p align="center">
-<img src="https://github.com/RomiGoldner/CVC/blob/main/CVC-scCVC_pipeline.png" width="300" height="380">
+<img src="https://github.com/RomiGoldner/CVC/blob/main/CVC-scCVC_pipeline.png" width="400" height="480">
 </p>
 
 ## Installation and Usage
