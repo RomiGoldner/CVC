@@ -74,18 +74,18 @@ The main notebooks used in the paper are under the lab_notebooks folder and sing
 
 The [lab_notebooks]() folder contains notebooks that are used to create the embeddings (mostly using CVC), analyze TCR data and run several downstream tasks. <br />
 Some of the more useful notebooks are: <br />
-- [lab_notebooks/create_embeddings.ipynb]() is used to create the embeddings (using either CVC ot scCVC) for a given dataset. <br />
-- [lab_notebooks/binary_classifiers.ipynb]() is used to run a binary classification (Public/Private or MAIT) on a given dataset. <br />
-- [lab_notebooks/model_train_test_data_creation.ipynb]() is used to create the train/test data for training CVC or other classification tasks. <br />
-- [lab_notebooks/Private_Public_labeling.ipynb]() is used to label the data as Public/Private. <br />
-- [lab_notebooks/plot_embeddings_MAIT.ipynb]() is used to label the data as MAIT and analyze it. <br />
+- [lab_notebooks/create_embeddings.ipynb](https://github.com/RomiGoldner/CVC/blob/main/lab_notebooks/create_embeddings.ipynb) is used to create the embeddings (using either CVC ot scCVC) for a given dataset. <br />
+- [lab_notebooks/binary_classifiers.ipynb](https://github.com/RomiGoldner/CVC/blob/main/lab_notebooks/binary_classifiers.ipynb) is used to run a binary classification (Public/Private or MAIT) on a given dataset. <br />
+- [lab_notebooks/model_train_test_data_creation.ipynb](https://github.com/RomiGoldner/CVC/blob/main/lab_notebooks/model_train_test_data_creation.ipynb) is used to create the train/test data for training CVC or other classification tasks. <br />
+- [lab_notebooks/Private_Public_labeling.ipynb](https://github.com/RomiGoldner/CVC/blob/main/lab_notebooks/Private_Public_labeling.ipynb) is used to label the data as Public/Private. <br />
+- [lab_notebooks/plot_embeddings_MAIT.ipynb](https://github.com/RomiGoldner/CVC/blob/main/lab_notebooks/plot_embeddings_MAIT.ipynb) is used to label the data as MAIT and analyze it. <br />
 
 The rest of the notebooks can be used to re-create the plots displayed in the paper, or new plots the given data. <br />
 
 
 The [single_cell_research]() folder contains notebooks that are useful for single cell data analysis and creation of embeddings using scCVC. <br />
-- [single_cell_research/preprocess_scData_for_training.ipynb]() is used to preprocess the single cell data for training scCVC. <br />
-- [single_cell_research/calc_psuedo_perplexity.ipynb]() is used to calculate the psuedo perplexity of the sequences in a given dataset. <br />
-- [single_cell_research/embeddings_sc_data.ipynb]() is used to create and plot the embeddings for single cells (concatenated representation). <br />
-- [single_cell_research/sequencing_10x_data_scCVC.ipynb]() is used to CDR3 sequencign - extract the CDR3 sequences from the RNA sequence using the Psuedo-Perplexity score. <br />
+- [single_cell_research/preprocess_scData_for_training.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/preprocess_scData_for_training.ipynb) is used to preprocess the single cell data for training scCVC. <br />
+- [single_cell_research/calc_psuedo_perplexity.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/calc_psuedo_perplexity.ipynb) is used to calculate the psuedo perplexity of the sequences in a given dataset. <br />
+- [single_cell_research/embeddings_sc_data.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/embeddings_sc_data.ipynb) is used to create and plot the embeddings for single cells (concatenated representation). <br />
+- [single_cell_research/sequencing_10x_data_scCVC.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/sequencing_10x_data_scCVC.ipynb) is used to CDR3 sequencign - extract the CDR3 sequences from the RNA sequence using the Psuedo-Perplexity score. <br />
 
