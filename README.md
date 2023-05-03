@@ -72,7 +72,7 @@ python -m bin.train_sc_cvc --epochs 50 --bs 128 --noneptune --pathdata PATH_TO_C
 ## Notebooks
 The main notebooks used in the paper are under the lab_notebooks folder and single_cell_research folder. <br />
 
-The [lab_notebooks]() folder contains notebooks that are used to create the embeddings (mostly using CVC), analyze TCR data and run several downstream tasks. <br />
+The [lab_notebooks](https://github.com/RomiGoldner/CVC/tree/main/lab_notebooks) folder contains notebooks that are used to create the embeddings (mostly using CVC), analyze TCR data and run several downstream tasks. <br />
 Some of the more useful notebooks are: <br />
 - [lab_notebooks/create_embeddings.ipynb](https://github.com/RomiGoldner/CVC/blob/main/lab_notebooks/create_embeddings.ipynb) is used to create the embeddings (using either CVC ot scCVC) for a given dataset. <br />
 - [lab_notebooks/binary_classifiers.ipynb](https://github.com/RomiGoldner/CVC/blob/main/lab_notebooks/binary_classifiers.ipynb) is used to run a binary classification (Public/Private or MAIT) on a given dataset. <br />
