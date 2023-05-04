@@ -165,10 +165,10 @@ def calc_pseudo_perplexity(model, tokenizer, seq, device):
 
 
 SEP='|'
-def create_tcr_seqs(tcr_seqs_df, max_len=120, column_to_concat='cdr3'):
+def create_tcr_seqs(tcr_seqs_df, max_len=120, column_to_concat='cdr3', barcodes_column='barcode_unique'):
     tcr_seqs = []
-    tcr_seqs_df = tcr_seqs_df.sort_values(by=['barcode_unique'])
-    barcodes = tcr_seqs_df['barcode_unique'].values
+    tcr_seqs_df = tcr_seqs_df.sort_values(by=[barcodes_column])
+    barcodes = tcr_seqs_df[barcodes_column].values
     tcrs = tcr_seqs_df[column_to_concat].values
     start_idx = 0
     for i in tqdm.tqdm(range(1, len(barcodes))):
@@ -184,6 +184,28 @@ def create_tcr_seqs(tcr_seqs_df, max_len=120, column_to_concat='cdr3'):
         tcr_seqs.append(tcr)
     return tcr_seqs
 
+
+def concatenate_labels(tcr_seqs_df, max_len=120, label_column='MAIT_cell', barcodes_column='barcode'):
+    # concatenated TCR sequences
+    tcr_seqs = create_tcr_seqs(tcr_seqs_df, max_len, column_to_concat='cdr3', barcodes_column=barcodes_column)
+    # concatenated labels
+    label_seqs = create_tcr_seqs(tcr_seqs_df, max_len, column_to_concat=label_column, barcodes_column=barcodes_column)
+    # Initialize lists to store the concatenated TCR sequences and their corresponding labels
+    concat_tcrs = []
+    labels = []
+    # Iterate through the TCR sequences and label sequences
+    for tcr, label_seq in zip(tcr_seqs, label_seqs):
+        # Check if "MAIT cell" is in the label_seq
+        if "MAIT_cell" in label_seq.split(SEP):
+            label = "MAIT_cell"
+        else:
+            label = "non-MAIT_cell"
+        # Append the TCR sequence and its corresponding label
+        concat_tcrs.append(tcr)
+        labels.append(label)
+    # Create a dataframe with the concatenated TCR sequences and their labels
+    df = pd.DataFrame({'cdr3': concat_tcrs, label_column: labels})
+    return df
 
 def random_concat_tcr_seqs(tcr_seqs_df, max_len=120, column_to_concat='cdr3'):
     tcr_seqs = []
