@@ -2,6 +2,7 @@ from cvc import utils as ut
 from sklearn.metrics import accuracy_score
 import xgboost as xgb
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.ensemble import RandomForestClassifier
 
 DEVICE = ut.get_device(0)
 
@@ -44,3 +45,17 @@ def lda_classify(train_embeddings, embed_train_labels_num, validation_embeddings
     # Score
     acc_score = accuracy_score(embed_val_labels_num, preds)
     return acc_score*100, preds, lda_classifier
+
+
+# Random Forest
+def rf_classify(train_embeddings, embed_train_labels_num, validation_embeddings, embed_val_labels_num, seed=None,
+                n_estimators=100, max_depth=6):
+    # Initialize classifier
+    rf_classifier = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=seed)
+    # Fit
+    rf_classifier.fit(train_embeddings, embed_train_labels_num)
+    # Predict
+    preds = rf_classifier.predict(validation_embeddings)
+    # Score
+    acc_score = accuracy_score(embed_val_labels_num, preds)
+    return acc_score*100, preds, rf_classifier
