@@ -13,7 +13,8 @@ def get_project_root():
 
 # GCP paths
 HOME_DIR_GCP = get_project_root()
-DATA_DIR = HOME_DIR_GCP + "/CDR3_data/"
+# DATA_DIR = HOME_DIR_GCP + "/CDR3_data/"
+DATA_DIR = '/home/dsi/rgoldner/CDR3_data/'
 # model trained on 5 million sequences - 2.5 million private and 2.5 million public
 TRANSFORMER = HOME_DIR_GCP + "/output_5mil_even_priv_pub"
 # model trained on 2.2 million single cells (represented with concatenated CDR3 sequences)

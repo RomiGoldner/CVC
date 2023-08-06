@@ -1,20 +1,19 @@
 name: cvc
 channels:
   - huggingface
-  - pytorch
-  - nvidia
-  - anaconda
   - conda-forge
-  - bioconda
+  - pytorch
+  - anaconda
   - defaults
 dependencies:
   - adjusttext=0.7.3
   - anndata=0.7.5
   - biopython=1.79
   - cached_property=1.5.2
-  - gdown=4.4.0
+  - gdown=3.13.0
   - gitpython=3.1.9
   - hdf5=1.10.6
+  - h5py=3.2.1
   - joblib=1.0.1
   - leidenalg=0.8.4
   - logomaker=0.8
@@ -25,7 +24,6 @@ dependencies:
   - neptune-client=0.10.4
   - numpy=1.20.1
   - pandas=1.2.3
-  - pip=21.0.1
   - python=3.9.2
   - pytorch=1.8.0
   - python-levenshtein=0.12.2
@@ -34,14 +32,13 @@ dependencies:
   - skorch=0.10.0
   - statsmodels=0.12.2
   - tensorboard=2.4.1
-  - tokenizers=0.10.1
-  - tqdm=4.50.2
   - transformers=4.4.2
-  - xgboost=1.7.2
+  - tqdm=4.50.2
+  - xgboost
   - pip:
     - bertviz==1.1.0
-    - h5py==3.2.1
     - scanpy==1.7.1
     - umap-learn==0.5.1
     - fair-esm==0.4.0
     - tape-proteins==0.3
+

@@ -7,7 +7,7 @@ from typing import *
 import numpy as np
 import torch
 import torch.nn as nn
-import neptune
+#import neptune
 
 from transformers import (
     DataCollatorForLanguageModeling,
@@ -240,22 +240,22 @@ def main():
     model = get_cvc_bert_model(args.bert, **params)
 
     # Set up neptune logger (this later because we want to also log params for model)
-    neptune_logger = None
-    if not args.noneptune:
-        neptune.init(project_qualified_name="wukevin/cvc")
-        experiment = neptune.create_experiment(
-            name=f"selfsupervised-{args.bert}",
-            params={
-                "datasets": args.datasets,
-                "epochs": args.epochs,
-                "batch_size": args.bs,
-                "lr": args.lr,
-                "warmup_ratio": args.warmup,
-                **params,
-            },
-            tags=[args.bert, "selfsupervised", "mlm"],
-        )
-        neptune_logger = model_utils.NeptuneHuggingFaceCallback(experiment)
+    # neptune_logger = None
+    # if not args.noneptune:
+    #     neptune.init(project_qualified_name="wukevin/cvc")
+    #     experiment = neptune.create_experiment(
+    #         name=f"selfsupervised-{args.bert}",
+    #         params={
+    #             "datasets": args.datasets,
+    #             "epochs": args.epochs,
+    #             "batch_size": args.bs,
+    #             "lr": args.lr,
+    #             "warmup_ratio": args.warmup,
+    #             **params,
+    #         },
+    #         tags=[args.bert, "selfsupervised", "mlm"],
+    #     )
+    #     neptune_logger = model_utils.NeptuneHuggingFaceCallback(experiment)
 
     trainer = Trainer(
         model=model,
@@ -263,7 +263,7 @@ def main():
         data_collator=data_collator,
         train_dataset=train_dataset,
         eval_dataset=test_dataset,  # Defaults to None, see above
-        callbacks=[neptune_logger] if neptune_logger is not None else None,
+        #callbacks=[neptune_logger] if neptune_logger is not None else None,
         compute_metrics=compute_metrics,
     )
     trainer.train()

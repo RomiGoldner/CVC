@@ -100,7 +100,7 @@ def tukey_outlier_cutoffs(
     return bottom_cutoff, top_cutoff
 
 
-@functools.cache
+#@functools.cache
 def load_blosum(
     fname: str = os.path.join(dl.LOCAL_DATA_DIR, "blosum62.json")
 ) -> pd.DataFrame:

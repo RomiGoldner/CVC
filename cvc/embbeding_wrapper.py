@@ -1,10 +1,14 @@
 import os
 import anndata as ad
 import scanpy as sc
+import pandas as pd
+import numpy as np
 from cvc import model_utils
 from cvc import plot_utils
 import importlib
+from matplotlib import pyplot as plt
 importlib.reload(plot_utils)
+from sklearn.decomposition import IncrementalPCA
 
 SAVEFIG_DPI = 1200
 
@@ -48,4 +52,23 @@ class EmbeddingWrapper:
         )
         if fname is not None:
             fig.savefig(fname, bbox_inches="tight", dpi=SAVEFIG_DPI)
+
         fig.show()
+        plt.show()
+
+# reduce dimensionality of embeddings
+def reduce_embedding_dim(original_embeddings, n_components=200):
+    ipca = IncrementalPCA(n_components=200, batch_size=1000)
+
+    # Fit and transform in batches
+    for i in range(0, original_embeddings.shape[0], 1000):
+        ipca.partial_fit(original_embeddings[i:i+1000])
+
+    # After fitting, you can transform the data
+    reduced_embeddings = ipca.transform(original_embeddings)
+    return reduced_embeddings
+
+
+
+
+

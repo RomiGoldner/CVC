@@ -34,8 +34,8 @@ from transformers import (
     TrainerControl,
 )
 
-from neptune.experiments import Experiment
-from neptune.api_exceptions import ChannelsValuesSendBatchError
+#from neptune.experiments import Experiment
+#from neptune.api_exceptions import ChannelsValuesSendBatchError
 
 
 import cvc.data_loader as dl
@@ -53,7 +53,7 @@ class NeptuneHuggingFaceCallback(TrainerCallback):
 
     def __init__(
         self,
-        experiment: Experiment,
+        #experiment: Experiment,
         epoch_index: bool = True,
         blacklist_keys: Iterable[str] = [
             "train_runtime",
@@ -64,7 +64,7 @@ class NeptuneHuggingFaceCallback(TrainerCallback):
             "eval_samples_per_second",
         ],
     ):
-        self.experiment = experiment
+        #self.experiment = experiment
         self.epoch_index = epoch_index
         self.blacklist_keys = set(blacklist_keys)
 
@@ -76,16 +76,16 @@ class NeptuneHuggingFaceCallback(TrainerCallback):
         if not state.is_world_process_zero:
             return
 
-        for k, v in logs.items():
-            if k not in self.blacklist_keys:
-                # https://docs-legacy.neptune.ai/api-reference/neptune/experiments/index.html
-                i = state.global_step if not self.epoch_index else logs["epoch"]
-                try:
-                    self.experiment.log_metric(k, i, v)
-                except ChannelsValuesSendBatchError:
-                    logging.warning(
-                        f"Error sending index-value pair {k}:{v} to neptune (expected for end of transformers training)"
-                    )
+        # for k, v in logs.items():
+        #     if k not in self.blacklist_keys:
+        #         # https://docs-legacy.neptune.ai/api-reference/neptune/experiments/index.html
+        #         i = state.global_step if not self.epoch_index else logs["epoch"]
+        #         try:
+        #             self.experiment.log_metric(k, i, v)
+        #         except ChannelsValuesSendBatchError:
+        #             logging.warning(
+        #                 f"Error sending index-value pair {k}:{v} to neptune (expected for end of transformers training)"
+        #             )
 
 
 def get_transformer_attentions(
