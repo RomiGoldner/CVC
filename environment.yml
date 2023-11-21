@@ -12,7 +12,7 @@ dependencies:
   - anndata=0.7.5
   - biopython=1.79
   - cached_property=1.5.2
-  - gdown=4.4.0
+  - gdown
   - gitpython=3.1.9
   - hdf5=1.10.6
   - joblib=1.0.1
@@ -24,19 +24,16 @@ dependencies:
   - neptune-client=0.10.4
   - numpy=1.23.5
   - pandas=1.2.3
-  - pip=21.0.1
-  - python=3.9.2
-  - pytorch=1.8.0
+  - python=3.8.16
+  - pytorch=2.0.1
   - python-levenshtein=0.12.2
   - scipy=1.10.1
   - seaborn=0.11.0
   - skorch=0.10.0
   - statsmodels
   - tensorboard=2.4.1
-  - tokenizers=0.10.1
-  - tqdm=4.50.2
-  - transformers=4.4.2
-  - xgboost=1.7.2
+  - tqdm
+  - xgboost
   - pip:
     - bertviz==1.1.0
     - h5py==3.2.1

@@ -65,3 +65,42 @@ class EmbeddingWrapper:
         if fname is not None:
             fig.savefig(fname, bbox_inches="tight", dpi=SAVEFIG_DPI)
         fig.show()
+        plt.show()
+
+
+class GenericModelEmbeddings:
+    def __init__(self, model_name=None, tokenizer_class=None, model_class=None, sequences_df=None, embeddings=None, device="cuda:1"):
+        self.tokenizer = tokenizer_class.from_pretrained(model_name) if tokenizer_class and model_name else None
+        self.model = model_class.from_pretrained(model_name).to(device) if model_class and model_name else None
+        self.device = device
+        self.sequences_df = sequences_df
+        self.embeddings= embeddings
+
+    def get_embeddings(self, sequences, batch_size=1024):
+        all_embeddings = []
+
+        for i in tqdm(range(0, len(sequences), batch_size)):
+            batched_sequences = sequences[i:i + batch_size]
+            inputs = self.tokenizer(batched_sequences, return_tensors="pt", padding=True, truncation=True, max_length=512).to(self.device)
+            with torch.no_grad():
+                outputs = self.model(**inputs, output_hidden_states=True)
+                last_hidden_state = outputs.hidden_states[-1]
+                all_embeddings.append(last_hidden_state[:, 0, :].cpu().numpy())
+        return np.concatenate(all_embeddings, axis=0)
+
+    def plot_embeddings(self, embeddings, title, label, fig_name):
+        if label == "Private_Public_label":
+            color_map = ListedColormap(['gold', 'darkblue'])
+        else:
+            color_map = ListedColormap(sns.color_palette("Spectral", 13))
+        embed_wrap = EmbeddingWrapper(None, self.device, self.sequences_df, pbar=True, embeddings=embeddings)
+        embed_wrap.sequences_df.sort_values(by=label, inplace=True, ascending=False)
+        embed_wrap.plot_embedding(
+            color_embed=label,
+            color_map=color_map,
+            title=title,
+            legend_size=5,
+            n_comps=50,
+            fname=fig_name,
+        )
+
