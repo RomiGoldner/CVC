@@ -17,22 +17,21 @@ dependencies:
   - hdf5=1.10.6
   - joblib=1.0.1
   - leidenalg=0.8.4
-  - logomaker=0.8
   - louvain=0.7.0
   - matplotlib=3.4.2
   - matplotlib-base=3.4.2
   - matplotlib-venn=0.11.6
   - neptune-client=0.10.4
-  - numpy=1.20.1
+  - numpy=1.23.5
   - pandas=1.2.3
   - pip=21.0.1
   - python=3.9.2
   - pytorch=1.8.0
   - python-levenshtein=0.12.2
-  - scipy=1.6.0
+  - scipy=1.10.1
   - seaborn=0.11.0
   - skorch=0.10.0
-  - statsmodels=0.12.2
+  - statsmodels
   - tensorboard=2.4.1
   - tokenizers=0.10.1
   - tqdm=4.50.2

@@ -18,7 +18,7 @@ def download_cvc_model(model_type = 'CVC'):
         f"{os.getcwd()}, but should be {get_project_root()}. rerun from root of project."
 
     # download the whole directory from dir_url
-    gdown.download_folder(dir_url,  quiet=False)
+    gdown.download_folder(dir_url,  quiet=False, use_cookies=False)
 
 def main():
     parser = argparse.ArgumentParser()
