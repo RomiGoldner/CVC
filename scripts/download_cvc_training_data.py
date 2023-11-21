@@ -13,7 +13,7 @@ def download_cvc_train_data(model_type = 'CVC'):
     output = 'data'
 
     # download the whole directory from dir_url
-    gdown.download_folder(dir_url,  quiet=False)
+    gdown.download(dir_url,  quiet=False, use_cookies=False, fuzzy=True)
 
 def main():
     parser = argparse.ArgumentParser()
