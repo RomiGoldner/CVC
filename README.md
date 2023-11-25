@@ -15,9 +15,9 @@ To install CVC/scCVC:
    Make sure you use a recent conda version, e.g. version=4.10 or above
 
 ```bash
-conda env create -n my_env_name_py39 python=3.9 --file=environment.yml
+conda env create -n my_env_name --file=environment.yml
 
-conda activate my_env_name_py39
+conda activate my_env_name
 ```
 
 2. Upload model into the project base dir.
