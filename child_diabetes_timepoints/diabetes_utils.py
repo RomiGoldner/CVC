@@ -1,5 +1,10 @@
 import os
 import pandas as pd
+import re
+import random
+from collections import defaultdict
+
+
 
 def process_diabetes_metadata(directory):
     # Read the CSV file
@@ -7,7 +12,8 @@ def process_diabetes_metadata(directory):
     # drop 'Adaptive ID' that are NaN
     samples = samples.dropna(subset=['Adaptive ID'])
     # make sure that if the 'Adaptive ID' is a number, it wil be a whole number
-    samples['Adaptive ID'] = samples['Adaptive ID'].astype(str).str.replace('.0', '')
+    pattern = re.compile(r"\.0")
+    samples['Adaptive ID'] = samples['Adaptive ID'].astype(str).str.replace(pattern, "", regex=True)
     # Create a 'Patient ID' column
     samples['Patient ID'] = samples.index // 4
     # Group by 'Patient ID' and join the 'Adaptive ID' values within each group
@@ -67,7 +73,7 @@ def apply_parse_tags(cases_dataframes_dict):
     for patient_id in tqdm(cases_dataframes_dict.keys()):
         dataframes_list = cases_dataframes_dict[patient_id]
         for i, df in enumerate(dataframes_list):
-            dataframes_list[i] = df.join(df['sample_catalog_tags'].apply(du.parse_tags))
+            dataframes_list[i] = df.join(df['sample_catalog_tags'].apply(parse_tags))
             # change cdr3_amino_acid column name to Sequences
             dataframes_list[i].rename(columns={'cdr3_amino_acid': 'Sequences'}, inplace=True)
             # change j_gene column to be all strings
@@ -75,3 +81,44 @@ def apply_parse_tags(cases_dataframes_dict):
     return cases_dataframes_dict
 
 
+# change format of the dataframes to be a dictionary where the key is the patient ID and the value is a list of dataframes
+def create_patient_timepoint_dict(dataframes_dict):
+    patient_timepoint_dict = {}
+
+    for patient, timepoints_dfs in dataframes_dict.items():
+        for idx, df in enumerate(timepoints_dfs):
+            patient_timepoint_label = f"{patient}_{idx}"
+            patient_timepoint_dict[patient_timepoint_label] = df
+
+    return patient_timepoint_dict
+
+
+# filter out specific timepoint data
+def filter_by_timepoint(input_dict, timepoint):
+    timepoint_str = f"_{timepoint}"
+    return {k: v for k, v in input_dict.items() if k.endswith(timepoint_str)}
+
+
+# concatenate and label the dataframes
+def concatenate_and_label(cases_dict, control_dict):
+    # Label and collect data frames from cases_dict
+    case_dfs = []
+    for value in cases_dict.values():
+        if not isinstance(value, pd.DataFrame):
+            value = pd.DataFrame(value)
+        value['label'] = 1
+        case_dfs.append(value)
+
+        # Label and collect data frames from control_dict
+    control_dfs = []
+    for value in control_dict.values():
+        if not isinstance(value, pd.DataFrame):
+            value = pd.DataFrame(value)
+        value['label'] = 0
+        control_dfs.append(value)
+
+    # Concatenate all the data frames together
+    all_dfs = case_dfs + control_dfs
+    concatenated_df = pd.concat(all_dfs, ignore_index=True)
+
+    return concatenated_df

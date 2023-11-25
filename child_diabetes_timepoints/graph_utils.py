@@ -21,7 +21,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import umap.umap_ as umap
-
+from torch_geometric.utils import from_networkx
 
 # Compute similarity matrix
 def cosine_similarity_pytorch(x):
@@ -486,30 +486,177 @@ def create_age_dict(cases_dataframes_dict):
     return ages_dict
 
 
-# covert a dictionary of NetworkX graphs to a list of PyTorch Geometric Data objects
-def convert_cvc_graph_to_pyg_data(graph_dict, type):
+# # covert a dictionary of NetworkX graphs to a list of PyTorch Geometric Data objects
+# def convert_cvc_graph_to_pyg_data(graph_dict, type, label_type = 'binary'):
+#     print("starting")
+#     data_list = []
+#     patient_list = []
+#     # add tqdm to show a progress bar
+#     for key, graph_info in tqdm(graph_dict.items()):
+#         nx_graph = graph_info['graph']
+#         age_num = graph_info['age_num'].iloc[0]
+#         # Extract the patient ID from the key
+#         patient_id = key.split('_')[0]
+#         # Extract the timepoint from the key
+#         timepoint = int(key.split('_')[-1])
+#         # Convert the NetworkX graph to a PyTorch Geometric Data object
+#         data = from_networkx(nx_graph)
+#         # Create tensors for Age_num and timepoint features
+#         age_num_tensor = torch.full((data.num_nodes, 1), age_num, dtype=torch.float)
+#         timepoint_tensor = torch.full((data.num_nodes, 1), timepoint, dtype=torch.float)
+#         # Concatenate these tensors with the existing node features (if any)
+#         features_to_concat = [age_num_tensor, timepoint_tensor]
+#         if data.x is not None:
+#             features_to_concat.insert(0, data.x)
+#         data.x = torch.cat(features_to_concat, dim=1)
+#         if label_type == 'binary':
+#             if type == 'case':
+#                 data.y = torch.tensor([1], dtype=torch.long)
+#             else:
+#                 data.y = torch.tensor([0], dtype=torch.long)
+#         elif label_type == 'multiclass':
+#             # Create 3 labels - cases of timepoint 3, cases of timepoints 0-2, controls
+#             if timepoint == 3 and type == 'case':
+#                 data.y = torch.tensor([1], dtype=torch.long)  # label
+#             elif timepoint < 3 and type == 'case':
+#                 data.y = torch.tensor([2], dtype=torch.long)  # label
+#             else:
+#                 data.y = torch.tensor([0], dtype=torch.long)  # label
+#         data_list.append(data)
+#         patient_list.append(patient_id)
+#     return data_list, patient_list
+
+import pandas as pd
+import torch
+import collections
+from tqdm.auto import tqdm
+from torch_geometric.data import Data
+from torch_geometric.utils import from_networkx
+
+# Helper function to fit LabelEncoders on all graph data
+import collections
+from sklearn.preprocessing import LabelEncoder
+from tqdm.auto import tqdm
+
+
+# TODO(P1): find attributes generically
+NODE_ATTR = ['v_family', 'j_family', 'j_gene', 'v_gene']
+"""
+num of labels for attr  v_family :  32
+num of labels for attr  j_family :  2
+num of labels for attr  j_gene   :  14
+num of labels for attr  v_gene   :  72
+"""
+
+def fit_encoders_on_all_graphs(graph_dicts: list):
+    print("starting to encode")
+    unique_labels = collections.defaultdict(set)
+
+    for graph_dict in graph_dicts:
+        for key, graph_info in tqdm(graph_dict.items(), total=len(graph_dict), desc='Fitting LabelEncoders'):
+            nx_graph = graph_info['graph']
+
+            for attr_name in NODE_ATTR:
+                attr_vals = nx.get_node_attributes(nx_graph, attr_name).values()
+                # if there's nan in the values, replace it with 'nan' so it can be encoded as well
+                attr_vals = [val if val == val else 'nan' for val in attr_vals]
+                unique_labels[attr_name].update(attr_vals)
+
+    for attr_name, labels in unique_labels.items():
+        print("num of labels for attr ", attr_name, ": ", len(labels))
+
+    # Fit LabelEncoder on the unique labels for each attribute
+    # encoders = {}
+    # for attr_name, labels in unique_labels.items():
+    #     encoders[attr_name] = LabelEncoder().fit(list(labels))
+
+    # now try with one-hot encoding
+    encoders = {}
+    for attr_name, labels in unique_labels.items():
+        from sklearn.preprocessing import OneHotEncoder
+        enc = OneHotEncoder(handle_unknown='ignore')
+        labels = [np.nan if label == 'nan' else label for label in labels]
+        labels = np.array(labels).reshape(-1, 1)
+        enc.fit(list(labels))
+        encoders[attr_name] = enc
+
+    return encoders
+
+
+# Helper function to encode and gather node features
+def encode_and_gather_node_features(nx_graph, encoders: dict):
+    node_attributes = []
+    for _, attrs in nx_graph.nodes(data=True):
+        # include only attrs in NODE_ATTR
+        attrs = {attr_name: attrs.get(attr_name, None) for attr_name in NODE_ATTR}
+        node_attributes.append(attrs)
+
+    df = pd.DataFrame(node_attributes)
+
+    transformed_cols = []
+
+    for col in df.select_dtypes(include=[object]).columns:
+        # Transform the column using its corresponding encoder
+        # if has 'nan' in the values
+        if 'nan' in list(df[col].values):
+            # print("has nan in values", col)
+            df[col] = df[col].fillna('nan')
+
+        values = df[col].values.reshape(-1, 1)
+        transformed_col = encoders[col].transform(values).toarray()
+
+        # Convert the transformed column into a DataFrame
+        transformed_df = pd.DataFrame(transformed_col, columns=[f"{col}_{cat}" for cat in encoders[col].categories_[0]])
+        # print("transformed df shape: ", transformed_df.shape)
+
+        # Add the transformed DataFrame to the list
+        transformed_cols.append(transformed_df)
+
+    # Concatenate all transformed DataFrames along axis=1
+    final_df = pd.concat([df.select_dtypes(exclude=[object])] + transformed_cols, axis=1)
+    node_attribute_tensor = torch.tensor(final_df.values, dtype=torch.float)
+    # print("node attribute tensor shape: ", node_attribute_tensor.shape)
+    return node_attribute_tensor
+
+
+def convert_cvc_graph_to_pyg_data(graph_dict, encoders, type, label_type='binary'):
+    print("starting")
+
+
     data_list = []
-    for key, graph_info in graph_dict.items():
+    patient_list = []
+
+    for key, graph_info in tqdm(graph_dict.items()):
         nx_graph = graph_info['graph']
         age_num = graph_info['age_num'].iloc[0]
-        # Extract the timepoint from the key
+
+        patient_id = key.split('_')[0]
         timepoint = int(key.split('_')[-1])
-        # Convert the NetworkX graph to a PyTorch Geometric Data object
+
+        node_attribute_tensor = encode_and_gather_node_features(nx_graph, encoders)
+
         data = from_networkx(nx_graph)
-        # Create tensors for Age_num and timepoint features
+
         age_num_tensor = torch.full((data.num_nodes, 1), age_num, dtype=torch.float)
         timepoint_tensor = torch.full((data.num_nodes, 1), timepoint, dtype=torch.float)
-        # Concatenate these tensors with the existing node features (if any)
-        features_to_concat = [age_num_tensor, timepoint_tensor]
-        if data.x is not None:
-            features_to_concat.insert(0, data.x)
+
+        features_to_concat = [node_attribute_tensor, age_num_tensor, timepoint_tensor]
+
         data.x = torch.cat(features_to_concat, dim=1)
-        # Create 3 labels - cases of timepoint 3, cases of timepoints 0-2, controls
-        if timepoint == 3 and type == 'case':
-            data.y = torch.tensor([1], dtype=torch.long)  # label
-        elif timepoint < 3 and type == 'case':
-            data.y = torch.tensor([2], dtype=torch.long)  # label
-        else:
-            data.y = torch.tensor([0], dtype=torch.long)  # label
+
+        if label_type == 'binary':
+            if type == 'case':
+                data.y = torch.tensor([1], dtype=torch.long)
+            else:
+                data.y = torch.tensor([0], dtype=torch.long)
+        elif label_type == 'multiclass':
+            if timepoint == 3 and type == 'case':
+                data.y = torch.tensor([1], dtype=torch.long)
+            elif timepoint < 3 and type == 'case':
+                data.y = torch.tensor([2], dtype=torch.long)
+            else:
+                data.y = torch.tensor([0], dtype=torch.long)
+
         data_list.append(data)
-    return data_list
+        patient_list.append(patient_id)
+    return data_list, patient_list

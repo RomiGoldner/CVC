@@ -230,7 +230,6 @@ def create_GRAPE_patient_graph(embeddings, cases_dataframes_dict, only_numerical
         patient_graph = faiss_to_networkx(patient_graph, cases_dataframes_dict, only_numerical_features)
     return patient_graph
 
-
 def create_cvc_graph_dict(case_patient_embeddings_dict: dict, cases_dataframes_dict: dict, df_type: str):
     type = df_type.split('_')[0]
     graph_embeddings_dict = {}
