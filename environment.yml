@@ -42,4 +42,4 @@ dependencies:
     - fair-esm==0.4.0
     - tape-proteins==0.3
     - logomaker==0.8
-
+    - accelerate==0.24.1
