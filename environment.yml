@@ -24,7 +24,7 @@ dependencies:
   - neptune-client=0.10.4
   - numpy=1.23.5
   - pandas=1.2.3
-  - python=3.8.16
+  - python=3.9
   - pytorch=2.0.1
   - python-levenshtein=0.12.2
   - scipy=1.10.1
@@ -41,3 +41,5 @@ dependencies:
     - umap-learn==0.5.1
     - fair-esm==0.4.0
     - tape-proteins==0.3
+    - logomaker==0.8
+    - accelerate==0.24.1

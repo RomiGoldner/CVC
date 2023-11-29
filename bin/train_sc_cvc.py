@@ -224,6 +224,7 @@ def main():
         skip_memory_metrics=True,
         disable_tqdm=True,
         logging_dir=os.path.join(args.outdir, "logs"),
+        report_to="none",
     )
     
     
