@@ -85,7 +85,5 @@ The rest of the notebooks can be used to re-create the plots displayed in the pa
 
 The [single_cell_research]() folder contains notebooks that are useful for single cell data analysis and creation of embeddings using scCVC. <br />
 - [single_cell_research/preprocess_scData_for_training.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/preprocess_scData_for_training.ipynb) is used to preprocess the single cell data for training scCVC. <br />
-- [single_cell_research/calc_psuedo_perplexity.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/calc_psuedo_perplexity.ipynb) is used to calculate the psuedo perplexity of the sequences in a given dataset. <br />
 - [single_cell_research/embeddings_sc_data.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/embeddings_sc_data.ipynb) is used to create and plot the embeddings for single cells (concatenated representation). <br />
-- [single_cell_research/sequencing_10x_data_scCVC.ipynb](https://github.com/RomiGoldner/CVC/blob/main/single_cell_research/sequencing_10x_data_scCVC.ipynb) is used to CDR3 sequencign - extract the CDR3 sequences from the RNA sequence using the Psuedo-Perplexity score. <br />
 
