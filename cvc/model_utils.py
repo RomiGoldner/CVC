@@ -9,7 +9,7 @@ import json
 import logging
 from itertools import zip_longest
 from typing import *
-from tqdm.notebook import tqdm
+from tqdm.auto import tqdm
 
 import numpy as np
 import pandas as pd
