@@ -69,6 +69,11 @@ python -m bin.train_sc_cvc --epochs 50 --bs 128 --noneptune --pathdata ./scDATA_
 # use the preprocess_scData_for_training.ipynb notebook to preprocess your data
 python -m bin.train_sc_cvc --epochs 50 --bs 128 --noneptune --pathdata PATH_TO_CSV --config ./model_configs/bert_defaults.json --outdir ./output_dir/
 ```
+## Test Embedding Creation
+```bash
+# Test CVC
+python -m tests.test_create_embeddings
+```
 ## Notebooks
 The main notebooks used in the paper are under the lab_notebooks folder and single_cell_research folder. <br />
 
