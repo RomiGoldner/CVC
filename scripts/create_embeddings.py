@@ -3,7 +3,13 @@ import sys
 import argparse
 import pandas as pd
 from cvc.embbeding_wrapper import EmbeddingWrapper
-from lab_notebooks.utils import TRANSFORMER, DEVICE
+from lab_notebooks.utils import TRANSFORMER, SC_TRANSFORMER, DEVICE
+
+# Define valid model mappings
+MODEL_MAP = {
+    "CVC": TRANSFORMER,
+    "SC_CVC": SC_TRANSFORMER
+}
 
 def main():
     # Parse arguments
@@ -11,7 +17,7 @@ def main():
     parser.add_argument("--input_path", required=True, type=str, help="Path to the input CSV file.")
     parser.add_argument("--output_path", default=None, type=str, help="Path to save the output embeddings CSV file. Default is <input_path>/<input_file>_embeddings.csv.")
     parser.add_argument("--batch_size", default=1024, type=int, help="Batch size for embedding creation. Default is 1024.")
-    parser.add_argument("--model_path", default=TRANSFORMER, type=str, help="Path to the model. Default is TRANSFORMER.")
+    parser.add_argument("--model_type", required=True, choices=MODEL_MAP.keys(), help="Model type: 'CVC' or 'SC_CVC'.")
     parser.add_argument("--device", default=DEVICE, type=str, help="Device to use for computation (cpu or cuda). Default is DEVICE.")
 
     args = parser.parse_args()
@@ -23,7 +29,7 @@ def main():
     output_path = args.output_path or os.path.join(os.path.dirname(input_path), os.path.basename(input_path).replace(".csv", "_embeddings.csv"))
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     batch_size = args.batch_size
-    model_path = args.model_path
+    model_path = MODEL_MAP[args.model_type]  # Convert model type to actual variable
     device = args.device
 
     # Load data
